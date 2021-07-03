@@ -21,7 +21,16 @@ public class ConsoleReader
 		System.out.println("Enter your mothers maiden name");
 		String mothersMaidenName = in.next();
 		
-		return new Person(name, lastName, mothersMaidenName); // zwracamy instancjê klasy Person; wywo³ujemy konstruktor i przekazujemy wszystkie zaczytane z konsoli parametry
+		System.out.println("Enter total monthly income in PLN");
+		double income = in.nextDouble();
+		
+		System.out.println("Are you married");
+		boolean married = in.nextBoolean();
+		
+		System.out.println("Enter number of Family dependnts (including applicant):");
+		int numOfDependant = in.nextInt();
+		
+		return new Person(name, lastName, mothersMaidenName, income, married, numOfDependant); // zwracamy instancjê klasy Person; wywo³ujemy konstruktor i przekazujemy wszystkie zaczytane z konsoli parametry
 		
 	}
 }
