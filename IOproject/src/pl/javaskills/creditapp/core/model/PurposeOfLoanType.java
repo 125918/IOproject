@@ -2,6 +2,6 @@ package pl.javaskills.creditapp.core.model;
 
 public enum PurposeOfLoanType 
 {
-	MORTAGE,
+	MORTGAGE,
 	PERSONAL_LOAN
 }

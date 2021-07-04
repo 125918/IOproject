@@ -1,31 +1,42 @@
 package pl.javaskills.creditapp.core;
 
+import java.math.BigDecimal;
+
+import pl.javaskills.creditapp.core.model.CreditApplication;
 import pl.javaskills.creditapp.core.model.Person;
 import pl.javaskills.creditapp.core.model.PersonalData;
 
-public class CreditApplicationService 
-{
+public class CreditApplicationService {
 
-    public String getDecision(Person person) 
-    {
+    public String getDecision(CreditApplication creditApplication) {
+        Person person = creditApplication.getPerson();
         PersonScoringCalculator calculator = new PersonScoringCalculator();
-        String decisionNegative = "Sorry " + person.getPersonalData().getName() + " " + person.getPersonalData().getLastName() + ", decision is negative";
-        String decisionPositive = "Congratulations " + person.getPersonalData().getName() + " " + person.getPersonalData().getLastName() + ", decision is positive";
         String decision;
         int scoring = calculator.calculate(person);
-        if(scoring < 300) 
-        {
-        	decision = "Sorry " + person.getPersonalData().getName() + " " + person.getPersonalData().getLastName() + ", decision is negative";
-        	
+        if (scoring < 300) {
+            decision = "Sorry " + person.getPersonalData().getName() + " " + person.getPersonalData().getLastName() + ", decision is negative";
+        } else if (scoring <= 400) {
+            decision = "Sorry " + person.getPersonalData().getName() + " " + person.getPersonalData().getLastName() + ",  bank requires additional documents. Our Consultant will contact you.";
+        } else {
+            double creditRate = person.getIncomePerFamilyMember() * 12 * creditApplication.getPurposeOfLoan().getPeriod();
+            switch (creditApplication.getPurposeOfLoan().getPurposeOfLoanType()) {
+                case PERSONAL_LOAN:
+                    creditRate *= Constants.PERSONAL_LOAN_LOAN_RATE;
+                    break;
+                case MORTGAGE:
+                    creditRate *= Constants.MORTGAGE_LOAN_RATE;
+                    break;
+            }
+            if (creditRate >= creditApplication.getPurposeOfLoan().getAmount()) {
+                decision = "Congratulations " + person.getPersonalData().getName() + " " + person.getPersonalData().getLastName() + ", decision is positive";
+            } else {
+                BigDecimal roundedCreditRate = new BigDecimal(creditRate).setScale(2);
+                decision = "Sorry, " + person.getPersonalData().getName() + " " + person.getPersonalData().getLastName() + ", decision is negative. Bank can borrow only " + roundedCreditRate;
+
+            }
+
         }
-        else if(scoring >= 300 && scoring <= 400)
-        {
-        	decision = "Sorry " + person.getPersonalData().getName() + " " + person.getPersonalData().getLastName() + ", bank requires additional documents. Our Consultant will contact you.";
-        }
-        else 
-        {
-        	decision = "Congratulations " + person.getPersonalData().getName() + " " + person.getPersonalData().getLastName() + ", decision is positive";
-        }
-        return scoring < 300 ? decisionNegative : decisionPositive;
+        return decision;
     }
 }
+
